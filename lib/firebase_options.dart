@@ -22,11 +22,12 @@ class DefaultFirebaseOptions {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
+      case TargetPlatform.iOS:
+        return ios;
+      case TargetPlatform.macOS:
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -41,18 +42,48 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBNTsU43KSNKwjGG6527clrqSIKz_9Tab4',
-    appId: '1:773132638586:web:82f5c0c636f993dd59dec3',
+    appId: '1:773132638586:web:402fb2974ee12d3659dec3',
     messagingSenderId: '773132638586',
     projectId: 'g-tech-admin',
     authDomain: 'g-tech-admin.firebaseapp.com',
-    storageBucket: 'gtech-admin.appspot.com',
+    storageBucket: 'g-tech-admin.firebasestorage.app',
+    measurementId: 'G-FRK0QZBVYZ',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ACTUAL_KEY',
-    appId: '1:1234567890:android:1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'gtech-admin',
-    storageBucket: 'gtech-admin.appspot.com',
+    apiKey: 'AIzaSyD9ILb7GTvkXtwcGytfVLVvITOPmlF1WkM',
+    appId: '1:773132638586:android:ccdbc9b6629f780959dec3',
+    messagingSenderId: '773132638586',
+    projectId: 'g-tech-admin',
+    storageBucket: 'g-tech-admin.firebasestorage.app',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBoGDHD9WreiDbbAYEnZwKMoKqDvT2pavs',
+    appId: '1:773132638586:ios:a24a6df26dd1782259dec3',
+    messagingSenderId: '773132638586',
+    projectId: 'g-tech-admin',
+    storageBucket: 'g-tech-admin.firebasestorage.app',
+    iosBundleId: 'com.example.adminApp',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBoGDHD9WreiDbbAYEnZwKMoKqDvT2pavs',
+    appId: '1:773132638586:ios:a24a6df26dd1782259dec3',
+    messagingSenderId: '773132638586',
+    projectId: 'g-tech-admin',
+    storageBucket: 'g-tech-admin.firebasestorage.app',
+    iosBundleId: 'com.example.adminApp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBNTsU43KSNKwjGG6527clrqSIKz_9Tab4',
+    appId: '1:773132638586:web:402fb2974ee12d3659dec3',
+    messagingSenderId: '773132638586',
+    projectId: 'g-tech-admin',
+    authDomain: 'g-tech-admin.firebaseapp.com',
+    storageBucket: 'g-tech-admin.firebasestorage.app',
+    measurementId: 'G-FRK0QZBVYZ',
+  );
+
 }

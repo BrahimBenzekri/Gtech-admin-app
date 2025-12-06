@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "773132638586",
+    "project_id": "g-tech-admin",
+    "storage_bucket": "g-tech-admin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773132638586:android:ccdbc9b6629f780959dec3",
+        "android_client_info": {
+          "package_name": "com.example.admin_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9ILb7GTvkXtwcGytfVLVvITOPmlF1WkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
