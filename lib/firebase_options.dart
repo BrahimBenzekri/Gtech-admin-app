@@ -22,10 +22,6 @@ class DefaultFirebaseOptions {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
-      case TargetPlatform.iOS:
-        return ios;
-      case TargetPlatform.macOS:
-        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -44,11 +40,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ACTUAL_KEY',
-    appId: '1:1234567890:web:1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'gtech-admin',
-    authDomain: 'gtech-admin.firebaseapp.com',
+    apiKey: 'AIzaSyBNTsU43KSNKwjGG6527clrqSIKz_9Tab4',
+    appId: '1:773132638586:web:82f5c0c636f993dd59dec3',
+    messagingSenderId: '773132638586',
+    projectId: 'g-tech-admin',
+    authDomain: 'g-tech-admin.firebaseapp.com',
     storageBucket: 'gtech-admin.appspot.com',
   );
 
@@ -58,25 +54,5 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1234567890',
     projectId: 'gtech-admin',
     storageBucket: 'gtech-admin.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ACTUAL_KEY',
-    appId: '1:1234567890:ios:1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'gtech-admin',
-    storageBucket: 'gtech-admin.appspot.com',
-    iosClientId: '1234567890.apps.googleusercontent.com',
-    iosBundleId: 'com.example.adminApp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ACTUAL_KEY',
-    appId: '1:1234567890:ios:1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'gtech-admin',
-    storageBucket: 'gtech-admin.appspot.com',
-    iosClientId: '1234567890.apps.googleusercontent.com',
-    iosBundleId: 'com.example.adminApp',
   );
 }
