@@ -116,7 +116,7 @@ class _ProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        '\$${product.basePrice.toStringAsFixed(2)}',
+                        '${product.price.toStringAsFixed(2)} DA',
                         style: const TextStyle(
                           color: AppTheme.primaryBlue,
                           fontWeight: FontWeight.bold,

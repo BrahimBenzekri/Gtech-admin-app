@@ -1,6 +1,5 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,8 +24,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   
   late TextEditingController _nameCtrl;
   late TextEditingController _categoryCtrl;
-  late TextEditingController _basePriceCtrl;
-  late TextEditingController _oldPriceCtrl;
+  late TextEditingController _priceCtrl;
   late TextEditingController _descCtrl;
   
   bool _inStock = true;
@@ -40,8 +38,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     final p = widget.product;
     _nameCtrl = TextEditingController(text: p?.name);
     _categoryCtrl = TextEditingController(text: p?.category);
-    _basePriceCtrl = TextEditingController(text: p?.basePrice.toString());
-    _oldPriceCtrl = TextEditingController(text: p?.oldPrice?.toString() ?? '');
+    _priceCtrl = TextEditingController(text: p?.price.toString());
     _descCtrl = TextEditingController(text: p?.description);
     _inStock = p?.inStock ?? true;
     _currentImageUrl = p?.imageUrl;
@@ -51,8 +48,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   void dispose() {
     _nameCtrl.dispose();
     _categoryCtrl.dispose();
-    _basePriceCtrl.dispose();
-    _oldPriceCtrl.dispose();
+    _priceCtrl.dispose();
     _descCtrl.dispose();
     super.dispose();
   }
@@ -71,8 +67,6 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     if (!_formKey.currentState!.validate()) return;
     
     if ((_currentImageUrl == null || _currentImageUrl!.isEmpty) && _imageFile == null) {
-        // Technically image might be optional? Spec says "image_url" in structure.
-        // Assuming required.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select an image')),
         );
@@ -82,19 +76,17 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final basePrice = double.tryParse(_basePriceCtrl.text) ?? 0.0;
-      final oldPrice = double.tryParse(_oldPriceCtrl.text); // can be null
+      final price = double.tryParse(_priceCtrl.text) ?? 0.0;
       
       final newProduct = Product(
-        id: widget.product?.id ?? '', // Service handles ID generation if empty/new logic
+        id: widget.product?.id ?? '', 
         name: _nameCtrl.text.trim(),
         category: _categoryCtrl.text.trim(),
-        basePrice: basePrice,
-        oldPrice: oldPrice,
+        price: price,
         imageUrl: _currentImageUrl ?? '',
         description: _descCtrl.text.trim(),
         inStock: _inStock,
-        storeIds: widget.product?.storeIds ?? [], // Keep existing or empty
+        storeIds: widget.product?.storeIds ?? [], 
       );
 
       final service = ref.read(productServiceProvider);
@@ -210,25 +202,11 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                    ),
                    const SizedBox(height: 12),
                    
-                   Row(
-                     children: [
-                       Expanded(
-                         child: TextFormField(
-                           controller: _basePriceCtrl,
-                           decoration: const InputDecoration(labelText: 'Base Price'),
-                           keyboardType: TextInputType.number,
-                           validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                         ),
-                       ),
-                       const SizedBox(width: 12),
-                       Expanded(
-                         child: TextFormField(
-                           controller: _oldPriceCtrl,
-                           decoration: const InputDecoration(labelText: 'Old Price (Opt)'),
-                           keyboardType: TextInputType.number,
-                         ),
-                       ),
-                     ],
+                   TextFormField(
+                     controller: _priceCtrl,
+                     decoration: const InputDecoration(labelText: 'Price (DA)'),
+                     keyboardType: TextInputType.number,
+                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                    ),
                    const SizedBox(height: 12),
                    

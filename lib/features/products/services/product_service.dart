@@ -30,8 +30,7 @@ class ProductService {
         id: docRef.id,
         name: product.name,
         category: product.category,
-        basePrice: product.basePrice,
-        oldPrice: product.oldPrice,
+        price: product.price,
         imageUrl: imageUrl, // Now Base64
         description: product.description,
         inStock: product.inStock,
