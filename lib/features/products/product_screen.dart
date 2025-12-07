@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/image_display.dart';
 import 'models/product.dart';
 import 'services/product_service.dart';
 
@@ -188,12 +189,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                        child: _imageFile != null
                            ? Image.file(_imageFile!, fit: BoxFit.cover)
                            : (_currentImageUrl != null && _currentImageUrl!.isNotEmpty)
-                               ? CachedNetworkImage(
-                                   imageUrl: _currentImageUrl!,
-                                   fit: BoxFit.cover,
-                                   placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                                   errorWidget: (_, __, ___) => const Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
-                                 )
+                               ? ImageDisplay(imageUrl: _currentImageUrl!, fit: BoxFit.cover)
                                : const Center(
                                    child: Column(
                                      mainAxisAlignment: MainAxisAlignment.center,

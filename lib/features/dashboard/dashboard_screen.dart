@@ -1,8 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/image_display.dart';
 import '../auth/auth_service.dart';
 import '../products/models/product.dart';
 import '../products/services/product_service.dart';
@@ -77,19 +78,7 @@ class _ProductCard extends StatelessWidget {
             SizedBox(
               width: 100,
               height: 100,
-              child: product.imageUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: product.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          Container(color: Colors.grey.shade200),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.image_not_supported),
-                    )
-                  : Container(
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.image, color: Colors.grey),
-                    ),
+              child: ImageDisplay(imageUrl: product.imageUrl),
             ),
             // Details
             Expanded(
