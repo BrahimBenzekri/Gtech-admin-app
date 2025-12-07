@@ -97,7 +97,7 @@ class AdminApp extends ConsumerWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
-          title: 'G-Tech Admin',
+          title: 'Gtech',
           theme: AppTheme.lightTheme,
           routerConfig: router,
           debugShowCheckedModeBanner: false,

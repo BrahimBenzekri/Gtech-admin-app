@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +16,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: const Text('G-Tech'),
         actions: [
           IconButton(
             icon: const Icon(Icons.people),
@@ -139,7 +138,9 @@ class _ProductCard extends StatelessWidget {
               padding: const EdgeInsets.only(right: 12.0),
               child: Icon(
                 product.inStock ? Icons.check_circle : Icons.cancel,
-                color: product.inStock ? AppTheme.accentTeal : Colors.red, // Using Teal for success as per spec
+                color: product.inStock
+                    ? AppTheme.accentTeal
+                    : Colors.red, // Using Teal for success as per spec
               ),
             ),
           ],

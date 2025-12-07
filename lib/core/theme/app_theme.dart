@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Brand Colors
-  static const Color primaryBlue = Color(0xFF0044FF);
+  static const Color primaryBlue = Color(0xFF37258A);
   static const Color accentTeal = Color(0xFF00D4C8);
   static const Color darkText = Color(0xFF0F172A);
   static const Color lightBg = Color(0xFFF8FAFC);
