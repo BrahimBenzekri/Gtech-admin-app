@@ -10,6 +10,7 @@ import 'features/auth/login_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/products/models/product.dart';
 import 'features/products/product_screen.dart';
+import 'features/customers/customer_list_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
            final id = state.pathParameters['id'];
            return ProductScreen(productId: id, product: product);
         },
+      ),
+      GoRoute(
+        path: '/customers',
+        builder: (context, state) => const CustomerListScreen(),
       ),
     ],
   );
