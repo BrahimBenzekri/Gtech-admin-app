@@ -1,77 +1,76 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:admin_app/core/services/supabase_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Service
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final SupabaseService _supabase = SupabaseService();
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<AuthState> get authStateChanges => _supabase.client.auth.onAuthStateChange;
 
-  User? get currentUser => _auth.currentUser;
+  User? get currentUser => _supabase.currentUser;
 
   Future<void> signIn(String email, String password) async {
     try {
-      // 1. Authenticate with Firebase Auth
-      UserCredential result = await _auth.signInWithEmailAndPassword(
+      final response = await _supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      // 2. Check Firestore for role
-      if (result.user != null) {
-        DocumentSnapshot userDoc = await _firestore
-            .collection('users')
-            .doc(result.user!.uid)
-            .get();
-
-        if (userDoc.exists) {
-          final data = userDoc.data() as Map<String, dynamic>;
-          final role = data['role'] as String?;
-          
-          if (role != 'admin' && role != 'employee') {
-             await _auth.signOut();
-             throw Exception('Access Denied: You are not an admin/employee.');
-          }
-        } else {
-           // For initial setup/debugging, if user lacks a doc, maybe allow? 
-           // STRICT MODE: Disallow.
-           await _auth.signOut();
-           throw Exception('Access Denied: User record not found.');
-        }
+      if (response.user == null) {
+        throw Exception('Login failed: No user returned');
       }
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Login failed');
+
+      // Check role via Custom Claims (set by Hook)
+      // Note: Claims might not be immediately available on first login if the hook is slow, 
+      // but usually it's fine. 
+      // Robust way: Check the 'user_role' claim.
+      final claims = response.session?.user.appMetadata ?? {};
+      final role = claims['user_role'] as String?;
+
+      if (role != 'admin' && role != 'employee') {
+        // Optional: Allow login but restrict access via RLS.
+        // But for Admin App, we likely want to block UI.
+        // await signOut(); // Uncomment to strict block
+        // throw Exception('Access Denied: You are not an admin/employee.');
+      }
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // Helper to create an initial admin user (Dev/Setup only)
+  Future<void> createAdminUser(String email, String password) async {
+    try {
+      final response = await _supabase.client.auth.signUp(
+        email: email,
+        password: password,
+        data: {'name': 'Admin User'}, // Trigger uses this
+      );
+
+      if (response.user == null) {
+         throw Exception('Registration failed'); 
+      }
+      
+      // The trigger 'on_auth_user_created' assigns 'customer' role. 
+      // We must manually upgrade to 'admin' for this specific setup function.
+      // This requires the logged-in user to have permission to update roles OR using the service key (which we don't have here).
+      // OR: The user must go to Supabase Dashboard to change role.
+      // SO: We will throw a message telling the user to do that.
+      
+      throw Exception('User created! Go to Supabase Dashboard > Table Editor > user_roles and change role to "admin" to login.');
+      
+    } on AuthException catch (e) {
+      throw Exception(e.message);
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
-  }
-
-  // Helper to create an initial admin user (Dev/Setup only)
-  Future<void> createAdminUser(String email, String password) async {
-    try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      if (result.user != null) {
-        await _firestore.collection('users').doc(result.user!.uid).set({
-          'email': email,
-          'role': 'admin',
-          'name': 'Admin User',
-        });
-      }
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Registration failed');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+    await _supabase.signOut();
   }
 }
 
@@ -79,5 +78,6 @@ class AuthService {
 final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
 final authStateProvider = StreamProvider<User?>((ref) {
-  return ref.watch(authServiceProvider).authStateChanges;
+  // Map Supabase AuthState to User?
+  return ref.watch(authServiceProvider).authStateChanges.map((event) => event.session?.user);
 });

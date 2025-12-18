@@ -1,9 +1,9 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:admin_app/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/login_screen.dart';
@@ -14,9 +14,8 @@ import 'features/customers/customer_list_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await dotenv.load(fileName: ".env");
+  await SupabaseService().initialize();
   runApp(const ProviderScope(child: AdminApp()));
 }
 
@@ -53,9 +52,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/product/:id',
         builder: (context, state) {
-           final product = state.extra as Product?;
-           final id = state.pathParameters['id'];
-           return ProductScreen(productId: id, product: product);
+          final product = state.extra as Product?;
+          final id = state.pathParameters['id'];
+          return ProductScreen(productId: id, product: product);
         },
       ),
       GoRoute(
@@ -71,8 +70,8 @@ class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
     _subscription = stream.asBroadcastStream().listen(
-      (dynamic _) => notifyListeners(),
-    );
+          (dynamic _) => notifyListeners(),
+        );
   }
 
   late final dynamic _subscription;

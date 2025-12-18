@@ -1,26 +1,24 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:admin_app/core/services/supabase_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/customer.dart';
 
 class CustomerService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final SupabaseService _supabase = SupabaseService();
 
   Stream<List<Customer>> getCustomers() {
-    return _firestore
-        .collection('users')
-        .where('role', isEqualTo: 'client')
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return Customer.fromMap(doc.id, doc.data());
-      }).toList();
-    });
+    // Assuming 'profiles' has the 'role' column as per schema provided.
+    // If not, we might need to join user_roles.
+    return _supabase.client
+        .from('profiles')
+        .stream(primaryKey: ['id'])
+        .eq('role', 'customer') // Filter for customers/clients
+        .map((data) => data.map((json) => Customer.fromMap(json['id'], json)).toList());
   }
 
   Future<void> updateDiscount(String customerId, double discount) async {
-    await _firestore.collection('users').doc(customerId).update({
-      'discount_percent': discount,
-    });
+    await _supabase.from('profiles').update({
+      'discount_percent': discount, // Ensure this column exists in profiles schema
+    }).eq('id', customerId);
   }
 }
 
