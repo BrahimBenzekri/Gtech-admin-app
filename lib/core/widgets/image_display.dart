@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:admin_app/core/services/cloudinary_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -24,14 +25,18 @@ class ImageDisplay extends StatelessWidget {
     try {
       // Check if it's a valid URL
       if (imageUrl.startsWith('http')) {
+        // Use Cloudinary SDK to generate an optimized URL if applicable
+        final displayUrl =
+            CloudinaryService().optimizeImageUrl(imageUrl);
+
         return CachedNetworkImage(
-          imageUrl: imageUrl,
+          imageUrl: displayUrl,
           fit: fit,
           placeholder: (context, url) => Container(color: Colors.grey.shade200),
           errorWidget: (context, url, error) => const Icon(Icons.broken_image),
         );
       }
-      
+
       // Assume Base64
       return Image.memory(
         base64Decode(imageUrl),
