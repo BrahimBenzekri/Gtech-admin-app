@@ -53,41 +53,35 @@ class ProductService {
       }
     }
 
-    log('Current user: ${_supabase.currentUser?.id}');
-    log('User metadata: ${_supabase.currentUser?.appMetadata}');
-
     // 1. Insert Product
     log('addProduct: Inserting product into Supabase');
-    try {
-      final productResponse = await _supabase
-          .from('products')
-          .insert({
-            'name': product.name,
-            'slug': _generateSlug(product.name),
-            'price': product.price,
-            'description': product.description,
-            'stock': product.inStock ? 10 : 0, // Fallback logic
-            // 'category_id': ...
-          })
-          .select()
-          .single();
-      final newProductId = productResponse['id'];
-      log('addProduct: Product inserted with ID: $newProductId');
-    } on Exception catch (e) {
-      log("addPProduct failed: $e");
-    }
+    final productResponse = await _supabase
+        .from('products')
+        .insert({
+          'name': product.name,
+          'slug': _generateSlug(product.name),
+          'price': product.price,
+          'description': product.description,
+          'stock': product.inStock ? 10 : 0, // Fallback logic
+          // 'category_id': ...
+        })
+        .select()
+        .single();
+
+    final newProductId = productResponse['id'];
+    log('addProduct: Product inserted with ID: $newProductId');
 
     // 2. Insert Image
-    // if (imageUrl.isNotEmpty) {
-    //   log('addProduct: Inserting product image record');
-    //   await _supabase.from('product_images').insert({
-    //     'product_id': newProductId,
-    //     'image_url': imageUrl,
-    //     'is_main': true,
-    //   });
-    //   log('addProduct: Product image record inserted successfully');
-    // }
-    // log('addProduct: Product "${product.name}" added successfully');
+    if (imageUrl.isNotEmpty) {
+      log('addProduct: Inserting product image record');
+      await _supabase.from('product_images').insert({
+        'product_id': newProductId,
+        'image_url': imageUrl,
+        'is_main': true,
+      });
+      log('addProduct: Product image record inserted successfully');
+    }
+    log('addProduct: Product "${product.name}" added successfully');
   }
 
   Future<void> updateProduct(Product product, File? imageFile) async {
