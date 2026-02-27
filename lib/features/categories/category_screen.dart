@@ -89,8 +89,8 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Category'),
-        content: Text(
-            'Are you sure you want to delete "${widget.category!.name}"?'),
+        content:
+            Text('Are you sure you want to delete "${widget.category!.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -98,8 +98,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child:
-                const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -145,14 +144,14 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Image Picker
                   GestureDetector(
                     onTap: _pickImage,
                     child: Container(
-                      height: 200,
-                      width: double.infinity,
+                      height: 300,
+                      width: 300,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(12),
@@ -168,8 +167,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                                   fit: BoxFit.cover)
                               : const Center(
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.add_a_photo,
                                           size: 50, color: Colors.grey),
@@ -185,8 +183,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                     controller: _nameCtrl,
                     decoration:
                         const InputDecoration(labelText: 'Category Name'),
-                    validator: (v) =>
-                        v?.isEmpty ?? true ? 'Required' : null,
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: 24),
 

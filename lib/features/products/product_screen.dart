@@ -127,8 +127,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
               child: const Text('Cancel')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.red))),
+              child: const Text('Delete', style: TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -173,14 +172,14 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Image Picker
                   GestureDetector(
                     onTap: _pickImage,
                     child: Container(
-                      height: 200,
-                      width: double.infinity,
+                      height: 300,
+                      width: 300,
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(12),
@@ -196,8 +195,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                   fit: BoxFit.cover)
                               : const Center(
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.add_a_photo,
                                           size: 50, color: Colors.grey),
@@ -213,18 +211,15 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     controller: _nameCtrl,
                     decoration:
                         const InputDecoration(labelText: 'Product Name'),
-                    validator: (v) =>
-                        v?.isEmpty ?? true ? 'Required' : null,
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
 
                   TextFormField(
                     controller: _priceCtrl,
-                    decoration:
-                        const InputDecoration(labelText: 'Price (DA)'),
+                    decoration: const InputDecoration(labelText: 'Price (DA)'),
                     keyboardType: TextInputType.number,
-                    validator: (v) =>
-                        v?.isEmpty ?? true ? 'Required' : null,
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
 
@@ -233,8 +228,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     data: (categories) {
                       return DropdownButtonFormField<String>(
                         initialValue: _selectedCategoryId,
-                        decoration: const InputDecoration(
-                            labelText: 'Category'),
+                        decoration:
+                            const InputDecoration(labelText: 'Category'),
                         items: categories.map((cat) {
                           return DropdownMenuItem(
                             value: cat.id,
@@ -257,11 +252,9 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
 
                   TextFormField(
                     controller: _descCtrl,
-                    decoration:
-                        const InputDecoration(labelText: 'Description'),
+                    decoration: const InputDecoration(labelText: 'Description'),
                     maxLines: 3,
-                    validator: (v) =>
-                        v?.isEmpty ?? true ? 'Required' : null,
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
 
@@ -278,12 +271,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                       onPressed: _isLoading ? null : _save,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryBlue,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(isEditing
-                          ? 'UPDATE PRODUCT'
-                          : 'CREATE PRODUCT'),
+                      child:
+                          Text(isEditing ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'),
                     ),
                   ),
                 ],
