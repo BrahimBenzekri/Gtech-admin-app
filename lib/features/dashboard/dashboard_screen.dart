@@ -96,8 +96,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     if (tabIndex == 2) {
       return FloatingActionButton(
         backgroundColor: AppTheme.accentTeal,
-        onPressed: () {
-          showAddCategoryDialog(context, ref);
+        onPressed: () async {
+          await context.push('/category/new');
+          ref.invalidate(categoriesProvider);
         },
         child: const Icon(Icons.add, color: Colors.white),
       );

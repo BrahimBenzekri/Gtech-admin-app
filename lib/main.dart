@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/login_screen.dart';
+import 'features/categories/category_screen.dart';
+import 'features/categories/models/category.dart' as cat;
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/products/models/product.dart';
 import 'features/products/product_screen.dart';
@@ -54,6 +56,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final product = state.extra as Product?;
           final id = state.pathParameters['id'];
           return ProductScreen(productId: id, product: product);
+        },
+      ),
+      GoRoute(
+        path: '/category/new',
+        builder: (context, state) => const CategoryScreen(),
+      ),
+      GoRoute(
+        path: '/category/:id',
+        builder: (context, state) {
+          final category = state.extra as cat.Category?;
+          return CategoryScreen(category: category);
         },
       ),
     ],
