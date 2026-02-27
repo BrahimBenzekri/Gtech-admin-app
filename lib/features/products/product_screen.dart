@@ -6,12 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/image_display.dart';
+import '../categories/services/category_service.dart';
 import 'models/product.dart';
 import 'services/product_service.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
   final Product? product; // Null if adding new
-  final String? productId; // From path parameter if product object not passed (deep link? mostly extra)
+  final String? productId;
 
   const ProductScreen({super.key, this.product, this.productId});
 
@@ -21,12 +22,12 @@ class ProductScreen extends ConsumerStatefulWidget {
 
 class _ProductScreenState extends ConsumerState<ProductScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   late TextEditingController _nameCtrl;
-  late TextEditingController _categoryCtrl;
   late TextEditingController _priceCtrl;
   late TextEditingController _descCtrl;
-  
+
+  String? _selectedCategoryId;
   bool _inStock = true;
   File? _imageFile;
   String? _currentImageUrl;
@@ -37,9 +38,9 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     super.initState();
     final p = widget.product;
     _nameCtrl = TextEditingController(text: p?.name);
-    _categoryCtrl = TextEditingController(text: p?.category);
     _priceCtrl = TextEditingController(text: p?.price.toString());
     _descCtrl = TextEditingController(text: p?.description);
+    _selectedCategoryId = p?.categoryId;
     _inStock = p?.inStock ?? true;
     _currentImageUrl = p?.imageUrl;
   }
@@ -47,7 +48,6 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _categoryCtrl.dispose();
     _priceCtrl.dispose();
     _descCtrl.dispose();
     super.dispose();
@@ -65,32 +65,32 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    
-    if ((_currentImageUrl == null || _currentImageUrl!.isEmpty) && _imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select an image')),
-        );
-        return;
+
+    if ((_currentImageUrl == null || _currentImageUrl!.isEmpty) &&
+        _imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an image')),
+      );
+      return;
     }
 
     setState(() => _isLoading = true);
 
     try {
       final price = double.tryParse(_priceCtrl.text) ?? 0.0;
-      
+
       final newProduct = Product(
-        id: widget.product?.id ?? '', 
+        id: widget.product?.id ?? '',
         name: _nameCtrl.text.trim(),
-        category: _categoryCtrl.text.trim(),
+        categoryId: _selectedCategoryId,
         price: price,
         imageUrl: _currentImageUrl ?? '',
         description: _descCtrl.text.trim(),
         inStock: _inStock,
-        storeIds: widget.product?.storeIds ?? [], 
       );
 
       final service = ref.read(productServiceProvider);
-      
+
       if (widget.product == null) {
         await service.addProduct(newProduct, _imageFile);
       } else {
@@ -115,15 +115,20 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
 
   Future<void> _delete() async {
     if (widget.product == null) return;
-    
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Product'),
         content: const Text('Are you sure?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Delete',
+                  style: TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -131,13 +136,16 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     if (confirm == true) {
       setState(() => _isLoading = true);
       try {
-        await ref.read(productServiceProvider).deleteProduct(widget.product!.id);
+        await ref
+            .read(productServiceProvider)
+            .deleteProduct(widget.product!.id);
         if (mounted) context.pop();
       } catch (e) {
-         if (mounted) {
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-           setState(() => _isLoading = false);
-         }
+        if (mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          setState(() => _isLoading = false);
+        }
       }
     }
   }
@@ -145,6 +153,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.product != null;
+    final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -166,88 +175,121 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   // Image Picker
-                   GestureDetector(
-                     onTap: _pickImage,
-                     child: Container(
-                       height: 200,
-                       width: double.infinity,
-                       decoration: BoxDecoration(
-                         color: Colors.grey.shade200,
-                         borderRadius: BorderRadius.circular(12),
-                         border: Border.all(color: Colors.grey.shade300),
-                       ),
-                       clipBehavior: Clip.antiAlias,
-                       child: _imageFile != null
-                           ? Image.file(_imageFile!, fit: BoxFit.cover)
-                           : (_currentImageUrl != null && _currentImageUrl!.isNotEmpty)
-                               ? ImageDisplay(imageUrl: _currentImageUrl!, fit: BoxFit.cover)
-                               : const Center(
-                                   child: Column(
-                                     mainAxisAlignment: MainAxisAlignment.center,
-                                     children: [
-                                       Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
-                                       Text('Tap to add image'),
-                                     ],
-                                   ),
-                                 ),
-                     ),
-                   ),
-                   const SizedBox(height: 16),
-                   
-                   TextFormField(
-                     controller: _nameCtrl,
-                     decoration: const InputDecoration(labelText: 'Product Name'),
-                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                   ),
-                   const SizedBox(height: 12),
-                   
-                   TextFormField(
-                     controller: _priceCtrl,
-                     decoration: const InputDecoration(labelText: 'Price (DA)'),
-                     keyboardType: TextInputType.number,
-                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                   ),
-                   const SizedBox(height: 12),
-                   
-                   TextFormField(
-                     controller: _categoryCtrl,
-                     decoration: const InputDecoration(labelText: 'Category'),
-                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                   ),
-                   const SizedBox(height: 12),
-                   
-                   TextFormField(
-                     controller: _descCtrl,
-                     decoration: const InputDecoration(labelText: 'Description'),
-                     maxLines: 3,
-                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                   ),
-                   const SizedBox(height: 12),
-                   
-                   SwitchListTile(
-                     title: const Text('In Stock'),
-                     value: _inStock,
-                     onChanged: (val) => setState(() => _inStock = val),
-                   ),
-                   
-                   const SizedBox(height: 24),
-                   SizedBox(
-                     width: double.infinity,
-                     child: ElevatedButton(
-                       onPressed: _isLoading ? null : _save,
-                       style: ElevatedButton.styleFrom(
-                         backgroundColor: AppTheme.primaryBlue,
-                         padding: const EdgeInsets.symmetric(vertical: 16),
-                       ),
-                       child: Text(isEditing ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'),
-                     ),
-                   ),
+                  // Image Picker
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: _imageFile != null
+                          ? Image.file(_imageFile!, fit: BoxFit.cover)
+                          : (_currentImageUrl != null &&
+                                  _currentImageUrl!.isNotEmpty)
+                              ? ImageDisplay(
+                                  imageUrl: _currentImageUrl!,
+                                  fit: BoxFit.cover)
+                              : const Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.add_a_photo,
+                                          size: 50, color: Colors.grey),
+                                      Text('Tap to add image'),
+                                    ],
+                                  ),
+                                ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    controller: _nameCtrl,
+                    decoration:
+                        const InputDecoration(labelText: 'Product Name'),
+                    validator: (v) =>
+                        v?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  TextFormField(
+                    controller: _priceCtrl,
+                    decoration:
+                        const InputDecoration(labelText: 'Price (DA)'),
+                    keyboardType: TextInputType.number,
+                    validator: (v) =>
+                        v?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Category Dropdown
+                  categoriesAsync.when(
+                    data: (categories) {
+                      return DropdownButtonFormField<String>(
+                        initialValue: _selectedCategoryId,
+                        decoration: const InputDecoration(
+                            labelText: 'Category'),
+                        items: categories.map((cat) {
+                          return DropdownMenuItem(
+                            value: cat.id,
+                            child: Text(cat.name),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategoryId = value;
+                          });
+                        },
+                        validator: (v) =>
+                            v == null ? 'Please select a category' : null,
+                      );
+                    },
+                    loading: () => const LinearProgressIndicator(),
+                    error: (err, _) => Text('Error loading categories: $err'),
+                  ),
+                  const SizedBox(height: 12),
+
+                  TextFormField(
+                    controller: _descCtrl,
+                    decoration:
+                        const InputDecoration(labelText: 'Description'),
+                    maxLines: 3,
+                    validator: (v) =>
+                        v?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  SwitchListTile(
+                    title: const Text('In Stock'),
+                    value: _inStock,
+                    onChanged: (val) => setState(() => _inStock = val),
+                  ),
+
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _save,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(isEditing
+                          ? 'UPDATE PRODUCT'
+                          : 'CREATE PRODUCT'),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          
           if (_isLoading)
             Container(
               color: Colors.black45,
