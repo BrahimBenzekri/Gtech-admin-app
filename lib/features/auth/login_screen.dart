@@ -68,7 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 40),
-                
+
                 if (_errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
@@ -126,35 +126,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                 ),
                 const SizedBox(height: 16),
-                TextButton(
-                  onPressed: _isLoading ? null : () async {
-                     setState(() {
-                      _isLoading = true;
-                      _errorMessage = null;
-                    });
-                    final messenger = ScaffoldMessenger.of(context);
-                    try {
-                      await ref.read(authServiceProvider).createAdminUser(
-                        _emailController.text.trim(),
-                        _passwordController.text.trim(),
-                      );
-                      messenger.showSnackBar(
-                           const SnackBar(content: Text('Admin created! Now Login.')),
-                         );
-                    } catch (e) {
-                      setState(() {
-                        _errorMessage = e.toString().replaceAll('Exception: ', '');
-                      });
-                    } finally {
-                      if (mounted) {
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      }
-                    }
-                  },
-                  child: const Text('SETUP: Create First Admin'),
-                ),
               ],
             ),
           ),
