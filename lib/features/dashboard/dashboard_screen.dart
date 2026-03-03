@@ -222,8 +222,8 @@ class _ProductCard extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: Icon(
-                product.inStock ? Icons.check_circle : Icons.cancel,
-                color: product.inStock ? AppTheme.accentTeal : Colors.red,
+                product.stock > 0 ? Icons.check_circle : Icons.cancel,
+                color: product.stock > 0 ? AppTheme.accentTeal : Colors.red,
               ),
             ),
           ],

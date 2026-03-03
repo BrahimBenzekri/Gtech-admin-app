@@ -28,7 +28,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   late TextEditingController _descCtrl;
 
   String? _selectedCategoryId;
-  bool _inStock = true;
+  late TextEditingController _stockCtrl;
   File? _imageFile;
   String? _currentImageUrl;
   bool _isLoading = false;
@@ -41,7 +41,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     _priceCtrl = TextEditingController(text: p?.price.toString());
     _descCtrl = TextEditingController(text: p?.description);
     _selectedCategoryId = p?.categoryId;
-    _inStock = p?.inStock ?? true;
+    _stockCtrl = TextEditingController(text: (p?.stock ?? 0).toString());
     _currentImageUrl = p?.imageUrl;
   }
 
@@ -50,6 +50,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     _nameCtrl.dispose();
     _priceCtrl.dispose();
     _descCtrl.dispose();
+    _stockCtrl.dispose();
     super.dispose();
   }
 
@@ -78,6 +79,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
 
     try {
       final price = double.tryParse(_priceCtrl.text) ?? 0.0;
+      final stock = int.tryParse(_stockCtrl.text) ?? 0;
 
       final newProduct = Product(
         id: widget.product?.id ?? '',
@@ -86,7 +88,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
         price: price,
         imageUrl: _currentImageUrl ?? '',
         description: _descCtrl.text.trim(),
-        inStock: _inStock,
+        stock: stock,
       );
 
       final service = ref.read(productServiceProvider);
@@ -258,10 +260,11 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  SwitchListTile(
-                    title: const Text('In Stock'),
-                    value: _inStock,
-                    onChanged: (val) => setState(() => _inStock = val),
+                  TextFormField(
+                    controller: _stockCtrl,
+                    decoration: const InputDecoration(labelText: 'Stock Quantity'),
+                    keyboardType: TextInputType.number,
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
 
                   const SizedBox(height: 24),

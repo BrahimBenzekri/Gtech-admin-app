@@ -6,7 +6,7 @@ class Product {
   final double? discountPrice;
   final String imageUrl;
   final String description;
-  final bool inStock;
+  final int stock;
 
   Product({
     required this.id,
@@ -16,7 +16,7 @@ class Product {
     this.discountPrice,
     required this.imageUrl,
     required this.description,
-    required this.inStock,
+    required this.stock,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +26,7 @@ class Product {
       'price': price,
       'discount_price': discountPrice,
       'description': description,
+      'stock': stock,
     };
   }
 
@@ -48,8 +49,6 @@ class Product {
       imageUrl = map['image_url'] ?? '';
     }
 
-    final stock = map['stock'] as int? ?? 0;
-
     return Product(
       id: id,
       name: map['name'] ?? '',
@@ -58,7 +57,7 @@ class Product {
       discountPrice: (map['discount_price'] as num?)?.toDouble(),
       imageUrl: imageUrl,
       description: map['description'] ?? '',
-      inStock: map['in_stock'] ?? (stock > 0),
+      stock: map['stock'] as int? ?? 0,
     );
   }
 }

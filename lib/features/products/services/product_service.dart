@@ -19,10 +19,7 @@ class ProductService {
         .order('created_at', ascending: false);
     log('getProducts: Fetched ${data.length} products');
     return data.map((json) {
-      final stock = json['stock'] as int? ?? 0;
-      final map = Map<String, dynamic>.from(json);
-      map['in_stock'] = stock > 0;
-      return Product.fromMap(json['id'], map);
+      return Product.fromMap(json['id'], json);
     }).toList();
   }
 
@@ -51,7 +48,7 @@ class ProductService {
           'price': product.price,
           'discount_price': product.discountPrice,
           'description': product.description,
-          'stock': product.inStock ? 10 : 0,
+          'stock': product.stock,
           'category_id': product.categoryId,
         })
         .select()
@@ -94,7 +91,7 @@ class ProductService {
       'price': product.price,
       'discount_price': product.discountPrice,
       'description': product.description,
-      'stock': product.inStock ? 10 : 0,
+      'stock': product.stock,
       'category_id': product.categoryId,
     }).eq('id', product.id);
     log('updateProduct: Product fields updated successfully');
