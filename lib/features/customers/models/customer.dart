@@ -4,6 +4,8 @@ class Customer {
   final String email;
   final String role;
   final double discountPercent;
+  final String? phoneNumber;
+  final String? address;
 
   Customer({
     required this.id,
@@ -11,6 +13,8 @@ class Customer {
     required this.email,
     required this.role,
     required this.discountPercent,
+    this.phoneNumber,
+    this.address,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,6 +23,8 @@ class Customer {
       'email': email,
       'role': role,
       'discount_percent': discountPercent,
+      'phone_number': phoneNumber,
+      'address': address,
     };
   }
 
@@ -29,6 +35,8 @@ class Customer {
       email: map['email'] ?? '',
       role: map['role'] ?? 'client',
       discountPercent: (map['discount_percent'] as num?)?.toDouble() ?? 0.0,
+      phoneNumber: map['phone_number'],
+      address: map['address'],
     );
   }
   
@@ -44,6 +52,8 @@ class Customer {
       email: email ?? this.email,
       role: role ?? this.role,
       discountPercent: discountPercent ?? this.discountPercent,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      address: address ?? this.address,
     );
   }
 }

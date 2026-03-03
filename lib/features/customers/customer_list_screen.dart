@@ -44,7 +44,19 @@ class CustomersTab extends ConsumerWidget {
                     : '?'),
               ),
               title: Text(customer.name),
-              subtitle: Text(customer.email),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(customer.email),
+                  if (customer.phoneNumber != null &&
+                      customer.phoneNumber!.isNotEmpty)
+                    Text('Phone: ${customer.phoneNumber}',
+                        style: const TextStyle(fontSize: 12)),
+                  if (customer.address != null && customer.address!.isNotEmpty)
+                    Text('Addr: ${customer.address}',
+                        style: const TextStyle(fontSize: 12)),
+                ],
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
