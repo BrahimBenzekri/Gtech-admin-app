@@ -221,10 +221,28 @@ class _ProductCard extends ConsumerWidget {
             // Stock Status
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
-              child: Icon(
-                product.stock > 0 ? Icons.check_circle : Icons.cancel,
-                color: product.stock > 0 ? AppTheme.accentTeal : Colors.red,
-              ),
+              child: product.stock > 0
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accentTeal,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: Text(
+                        '${product.stock}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
+                  : const Icon(
+                      Icons.cancel,
+                      color: Colors.red,
+                      size: 25,
+                    ),
             ),
           ],
         ),
