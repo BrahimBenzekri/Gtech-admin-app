@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -107,6 +108,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
+        log('Error saving product: $e');
       }
     } finally {
       if (mounted) {
@@ -262,7 +264,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
 
                   TextFormField(
                     controller: _stockCtrl,
-                    decoration: const InputDecoration(labelText: 'Stock Quantity'),
+                    decoration:
+                        const InputDecoration(labelText: 'Stock Quantity'),
                     keyboardType: TextInputType.number,
                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
