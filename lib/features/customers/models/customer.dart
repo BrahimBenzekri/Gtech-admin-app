@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 class Customer {
   final String id;
   final String name;
@@ -39,7 +41,7 @@ class Customer {
       address: map['address'],
     );
   }
-  
+
   Customer copyWith({
     String? name,
     String? email,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:admin_app/core/services/supabase_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/customer.dart';
@@ -12,17 +14,33 @@ class CustomerService {
         .from('profiles')
         .stream(primaryKey: ['id'])
         .eq('role', 'customer') // Filter for customers/clients
-        .map((data) => data.map((json) => Customer.fromMap(json['id'], json)).toList());
+        .map((data) =>
+            data.map((json) => Customer.fromMap(json['id'], json)).toList());
   }
 
-  Future<void> updateDiscount(String customerId, double discount) async {
-    await _supabase.from('profiles').update({
-      'discount_percent': discount, // Ensure this column exists in profiles schema
-    }).eq('id', customerId);
+  Future<void> updateDiscount(String customerId, int discount) async {
+    try {
+      log('updateDiscount: START - ID: "$customerId", Value: $discount');
+
+      // We NEED .select() to see if any rows were actually affected
+      final response = await _supabase
+          .from('profiles')
+          .update({
+            'discount_percent': discount,
+          })
+          .eq('id', customerId)
+          .select();
+
+      log('updateDiscount: SUCCESS - Response data: $response');
+    } catch (e) {
+      log('updateDiscount: EXCEPTION - $e');
+      rethrow;
+    }
   }
 }
 
-final customerServiceProvider = Provider<CustomerService>((ref) => CustomerService());
+final customerServiceProvider =
+    Provider<CustomerService>((ref) => CustomerService());
 
 final customersStreamProvider = StreamProvider<List<Customer>>((ref) {
   return ref.watch(customerServiceProvider).getCustomers();

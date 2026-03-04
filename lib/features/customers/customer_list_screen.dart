@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
@@ -37,8 +38,7 @@ class CustomersTab extends ConsumerWidget {
             final customer = customers[index];
             return ListTile(
               leading: CircleAvatar(
-                backgroundColor:
-                    AppTheme.primaryBlue.withValues(alpha: 0.1),
+                backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
                 child: Text(customer.name.isNotEmpty
                     ? customer.name[0].toUpperCase()
                     : '?'),
@@ -108,12 +108,28 @@ class CustomersTab extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              final val = double.tryParse(controller.text);
+              final val = int.tryParse(controller.text);
               if (val != null && val >= 0 && val <= 100) {
-                await ref
-                    .read(customerServiceProvider)
-                    .updateDiscount(customer.id, val);
-                if (context.mounted) Navigator.pop(context);
+                try {
+                  log('UI: Attempting to update discount for ${customer.id}');
+                  await ref
+                      .read(customerServiceProvider)
+                      .updateDiscount(customer.id, val);
+
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Discount updated!')),
+                    );
+                    Navigator.pop(context);
+                  }
+                } catch (e) {
+                  log('UI: Error updating discount: $e');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Invalid percentage')),
